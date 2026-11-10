@@ -191,7 +191,7 @@ export function createProviders(config: ProviderConfig): Providers {
   const videoPrimary = config.video ?? (googleKey ? "gemini" : falKey ? "fal" : undefined);
 
   if (videoPrimary === "comfyui") {
-    if (comfyUrl && comfyWorkflow) videoProviders.push(new ComfyUIVideo(comfyUrl, comfyWorkflow));
+    videoProviders.push(new ComfyUIVideo(comfyUrl, comfyWorkflow));
     if (googleKey) videoProviders.push(new GeminiVideo(config.videoModel, googleKey));
     if (falKey) videoProviders.push(new FalVideo(undefined, falKey));
   } else if (videoPrimary === "fal") {
