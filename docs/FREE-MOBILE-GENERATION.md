@@ -53,4 +53,4 @@ GitHub Pages может бесплатно размещать статическ
 - Kaggle GPU usage: https://www.kaggle.com/docs/efficient-gpu-usage
 - Google Colab FAQ: https://research.google.com/colaboratory/faq.html
 
-Подробная техническая схема и честные ограничения: [NO-LIMIT-GENERATION.md](NO-LIMIT-GENERATION.md).
+Если нужно больше бесплатного GPU-времени и готовность один раз настроить окружение, есть экспериментальный путь через Kaggle + ComfyUI + Wan 2.1 VACE 1.3B. Он принимает картинку-референс и текст, рассчитан на 480p и потенциально лучше подходит к 16 ГБ T4/P100, чем LTX-2.5. Но это не готовая кнопка: Kaggle-сессия временная, реальный запуск на конкретной GPU не подтверждён, а подключение телефона к OpenReels требует отдельного защищённого backend. Инструкция: [COMFYUI-WAN-VACE.md](COMFYUI-WAN-VACE.md).\n\nПодробная техническая схема и честные ограничения: [NO-LIMIT-GENERATION.md](NO-LIMIT-GENERATION.md).
