@@ -85,7 +85,7 @@ function displayName(key: string): string {
 export function HomePage() {
   const navigate = useNavigate();
   const [topic, setTopic] = useState("");
-  const [archetype, setArchetype] = useState("bold-illustration");
+  const [archetype, setArchetype] = useState("bold_illustration");
   const [platform, setPlatform] = useState("tiktok");
   const [llmProvider, setLlmProvider] = useState("gemini");
   const [llmModel, setLlmModel] = useState("");
