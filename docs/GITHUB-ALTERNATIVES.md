@@ -18,7 +18,7 @@ OpenReels уже закрывает основной конвейер: тема 
 ## Рекомендуемая архитектура
 
 1. Сохранить OpenReels как orchestration/UI/rendering слой.
-2. Добавить отдельный ComfyUI video provider, который отправляет API-workflow в ComfyUI, ждёт завершения, скачивает клип и возвращает его в существующий scene pipeline. Реализация добавлена в `src/providers/video/comfyui.ts`; настройка — в `docs/COMFYUI-LTX.md`.
+2. Использовать универсальный ComfyUI video provider: он отправляет API-workflow в ComfyUI, ждёт завершения, скачивает клип и возвращает его в существующий scene pipeline. Реализация — `src/providers/video/comfyui.ts`; инструкции — `docs/COMFYUI-LTX.md` и `docs/COMFYUI-WAN-VACE.md`.
 3. Вынести workflow JSON в workflows/ и конфигурацию endpoint/model в переменные окружения. Не загружать тяжёлые модели в Git.
 4. Добавить capability check/health check и fallback на существующие Veo/fal провайдеры.
 5. Для постоянства героев хранить reference image/character sheet и передавать его в workflow для каждой сцены; один только текстовый prompt не гарантирует идентичность.
