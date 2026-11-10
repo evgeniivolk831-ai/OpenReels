@@ -44,3 +44,13 @@ GitHub Pages может бесплатно размещать статическ
 - Документация бесплатной ZeroGPU-квоты: https://huggingface.co/docs/hub/spaces-zerogpu
 - Исходный проект prompt-to-video: https://github.com/umer-un/prompt-to-video
 - Бесплатная мобильная обёртка для image-to-video (нужно загрузить картинку): https://igorcsis.github.io/nifty-vid/
+
+
+## Как получить больше бесплатного GPU-времени
+
+Если дневной квоты ZeroGPU недостаточно, можно вручную использовать Kaggle Notebooks с GPU: в документации Kaggle указано до 30 GPU-часов в неделю (квота может зависеть от доступности). Это существенно больше короткой ZeroGPU-квоты, но не безлимитно и не гарантирует постоянную работу сервера. С телефона можно открыть notebook в браузере, но запуск и обслуживание такого окружения менее удобны, чем готовый Space.
+
+- Kaggle GPU usage: https://www.kaggle.com/docs/efficient-gpu-usage
+- Google Colab FAQ: https://research.google.com/colaboratory/faq.html
+
+Подробная техническая схема и честные ограничения: [NO-LIMIT-GENERATION.md](NO-LIMIT-GENERATION.md).
