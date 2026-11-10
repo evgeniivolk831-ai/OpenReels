@@ -170,7 +170,7 @@ app.get("/api/v1/providers", async () => ({
     { key: "gemini", label: "Google Veo" },
     { key: "fal", label: "fal.ai (Kling, Wan, etc.)" },
     ...(process.env["COMFYUI_URL"] && process.env["COMFYUI_WORKFLOW_PATH"]
-      ? [{ key: "comfyui", label: "ComfyUI (LTX-2.5 / self-hosted)" }]
+      ? [{ key: "comfyui", label: "ComfyUI (self-hosted workflow)" }]
       : []),
   ],
 }));
