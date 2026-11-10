@@ -41,9 +41,9 @@ uv sync --frozen
 | `__OPENREELS_PROMPT__` | Prompt движения сцены |
 | `__OPENREELS_IMAGE__` | Имя загруженного reference image |
 | `__OPENREELS_NEGATIVE_PROMPT__` | Negative prompt |
-| `__OPENREELS_FRAMES__` | Число кадров (длительность × 24) |
-| `__OPENREELS_WIDTH__` | 720 для 9:16, 1280 для 16:9 |
-| `__OPENREELS_HEIGHT__` | 1280 для 9:16, 720 для 16:9 |
+| `__OPENREELS_FRAMES__` | Число кадров, округлённое под `COMFYUI_FRAME_STEP` (по умолчанию 8n+1) |
+| `__OPENREELS_WIDTH__` | Ширина из `COMFYUI_WIDTH`/`COMFYUI_HEIGHT` с учётом ориентации |
+| `__OPENREELS_HEIGHT__` | Высота из `COMFYUI_WIDTH`/`COMFYUI_HEIGHT` с учётом ориентации |
 
 Маркеры нужно поставить в соответствующие входы именно твоего workflow: текстовый encoder, image loader, negative conditioning и параметры длины/размера. Не каждый workflow использует все маркеры; проверь соответствие полей и типов узлов. Для видеоэкспорта добавь Video Combine/Save Video узел, который выдаёт MP4. Адаптер ищет MP4/WebM/MOV в выходах `videos`, `gifs` или `files`.
 
@@ -59,7 +59,7 @@ COMFYUI_TIMEOUT_MS=600000
 
 Если OpenReels запущен в Docker, `127.0.0.1` указывает на контейнер OpenReels, а не на хост. Используй адрес ComfyUI, доступный из контейнера (например, имя сервиса в общей Docker-сети или адрес хоста).
 
-Перезапусти API и worker. В веб-студии открой «Дополнительно» → «Video Provider» → «ComfyUI (LTX-2.5)». При выборе ComfyUI он становится первым видеопровайдером; настроенные Veo/fal остаются резервными. В режиме «Automatic fallback» сохраняется автоматический порядок.
+Перезапусти API и worker. В веб-студии открой «Дополнительно» → «Video Provider» → «ComfyUI (self-hosted workflow)». При выборе ComfyUI он становится первым видеопровайдером; настроенные Veo/fal остаются резервными. В режиме «Automatic fallback» сохраняется автоматический порядок.
 
 ## 4. Проверка
 
