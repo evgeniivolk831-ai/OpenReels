@@ -53,6 +53,10 @@ export class ComfyUIVideo implements VideoProvider {
   private readonly baseUrl: string;
   private readonly workflowPath: string;
   private readonly timeoutMs: number;
+  private readonly width: number;
+  private readonly height: number;
+  private readonly fps: number;
+  private readonly frameStep: number;
 
   constructor(baseUrl = process.env["COMFYUI_URL"], workflowPath = process.env["COMFYUI_WORKFLOW_PATH"]) {
     if (!baseUrl) throw new Error("COMFYUI_URL is required for ComfyUI video generation");
@@ -64,6 +68,10 @@ export class ComfyUIVideo implements VideoProvider {
     this.baseUrl = baseUrl.replace(/\/$/, "");
     this.workflowPath = workflowPath;
     this.timeoutMs = Number(process.env["COMFYUI_TIMEOUT_MS"] ?? DEFAULT_TIMEOUT_MS);
+    this.width = Math.max(32, Number.parseInt(process.env["COMFYUI_WIDTH"] ?? "1280", 10) || 1280);
+    this.height = Math.max(32, Number.parseInt(process.env["COMFYUI_HEIGHT"] ?? "720", 10) || 720);
+    this.fps = Math.max(1, Number.parseInt(process.env["COMFYUI_FPS"] ?? "24", 10) || 24);
+    this.frameStep = Math.max(1, Number.parseInt(process.env["COMFYUI_FRAME_STEP"] ?? "8", 10) || 8);
   }
 
   private async request(url: string, init?: RequestInit): Promise<Response> {
@@ -89,9 +97,12 @@ export class ComfyUIVideo implements VideoProvider {
     };
     if (!uploaded.name) throw new Error("ComfyUI image upload returned no filename");
 
-    const width = opts.aspectRatio === "16:9" ? 1280 : 720;
-    const height = opts.aspectRatio === "16:9" ? 720 : 1280;
-    const frames = Math.max(1, Math.round((opts.durationSeconds ?? 5) * 24));
+    const portrait = opts.aspectRatio === "9:16";
+    const width = portrait ? Math.min(this.width, this.height) : Math.max(this.width, this.height);
+    const height = portrait ? Math.max(this.width, this.height) : Math.min(this.width, this.height);
+    const requestedFrames = (opts.durationSeconds ?? 5) * this.fps;
+    // Diffusion video models commonly require N * step + 1 frames (e.g. 81 for Wan, 121 for LTX).
+    const frames = Math.max(this.frameStep + 1, Math.round(requestedFrames / this.frameStep) * this.frameStep + 1);
     const prepared = replaceTokens(workflow, {
       "__OPENREELS_PROMPT__": opts.prompt,
       "__OPENREELS_IMAGE__": uploaded.subfolder ? `${uploaded.subfolder}/${uploaded.name}` : uploaded.name,
