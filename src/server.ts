@@ -166,7 +166,9 @@ app.get("/api/v1/providers", async () => ({
   video: [
     { key: "gemini", label: "Google Veo" },
     { key: "fal", label: "fal.ai (Kling, Wan, etc.)" },
-    { key: "comfyui", label: "ComfyUI (LTX-2.5 / self-hosted)" },
+    ...(process.env["COMFYUI_URL"] && process.env["COMFYUI_WORKFLOW_PATH"]
+      ? [{ key: "comfyui", label: "ComfyUI (LTX-2.5 / self-hosted)" }]
+      : []),
   ],
 }));
 
@@ -205,6 +207,10 @@ app.post<{ Body: CreateJobBody }>("/api/v1/jobs", async (request, reply) => {
   }
   if (topic.trim().length > 500) {
     return reply.status(400).send({ error: "topic must be 500 characters or fewer" });
+  }
+
+  if (providers?.video && !["gemini", "fal", "comfyui"].includes(providers.video)) {
+    return reply.status(400).send({ error: `Unknown video provider: ${providers.video}` });
   }
 
   // Validate archetype if provided
