@@ -80,7 +80,7 @@ export function validateEnv(opts: {
   if (opts.videoProvider === "comfyui") {
     const missingComfy = ["COMFYUI_URL", "COMFYUI_WORKFLOW_PATH"].filter((key) => !process.env[key]);
     if (missingComfy.length) {
-      console.error(`\\nComfyUI video provider requires: ${missingComfy.join(", ")}. See docs/COMFYUI-LTX.md.\\n`);
+      console.error(`\nComfyUI video provider requires: ${missingComfy.join(", ")}. See docs/COMFYUI-LTX.md.\n`);
       process.exit(1);
     }
   }
