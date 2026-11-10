@@ -197,6 +197,7 @@ export function createProviders(config: ProviderConfig): Providers {
   } else if (videoPrimary === "fal") {
     if (falKey) videoProviders.push(new FalVideo(undefined, falKey));
     if (googleKey) videoProviders.push(new GeminiVideo(config.videoModel, googleKey));
+    if (comfyUrl && comfyWorkflow) videoProviders.push(new ComfyUIVideo(comfyUrl, comfyWorkflow));
   } else if (videoPrimary === "gemini" || videoPrimary === undefined) {
     if (googleKey) videoProviders.push(new GeminiVideo(config.videoModel, googleKey));
     if (falKey) videoProviders.push(new FalVideo(undefined, falKey));
