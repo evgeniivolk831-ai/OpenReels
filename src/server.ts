@@ -166,6 +166,7 @@ app.get("/api/v1/providers", async () => ({
   video: [
     { key: "gemini", label: "Google Veo" },
     { key: "fal", label: "fal.ai (Kling, Wan, etc.)" },
+    { key: "comfyui", label: "ComfyUI (LTX-2.5 / self-hosted)" },
   ],
 }));
 
