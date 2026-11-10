@@ -162,6 +162,7 @@ export function parseArgs(): CLIOptions {
       new Option("--video-provider <provider>", "Video generation provider").choices([
         "gemini",
         "fal",
+        "comfyui",
       ]),
     )
     .option(
