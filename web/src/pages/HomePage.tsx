@@ -95,7 +95,7 @@ export function HomePage() {
   const [ttsProvider, setTtsProvider] = useState("gemini-tts");
   const [imageProvider, setImageProvider] = useState("gemini");
   const [musicProvider, setMusicProvider] = useState("bundled");
-  const [videoProvider, setVideoProvider] = useState("");
+  const [videoProvider, setVideoProvider] = useState("auto");
   const [pacing, setPacing] = useState("");
   const [dryRun, setDryRun] = useState(false);
   const [directionText, setDirectionText] = useState("Создай короткий вертикальный образовательный мультфильм на русском языке. Стиль: выразительная 2D мультяшная иллюстрация и анимированная инфографика, чистые контуры, единая тёплая палитра, понятные визуальные метафоры. Если появляется ведущий персонаж, подробно зафиксируй его внешность и повторяй описание без изменений во всех сценах. Все надписи и субтитры — на русском, без псевдотекста. Речь естественная, разговорная, с правильным произношением. Один главный смысл на сцену, динамичные, но плавные переходы, музыка тише голоса. Заверши коротким визуальным выводом.");
@@ -148,7 +148,7 @@ export function HomePage() {
           tts: ttsProvider,
           image: imageProvider,
           music: musicProvider,
-          ...(videoProvider ? { video: videoProvider } : {}),
+          ...(videoProvider !== "auto" ? { video: videoProvider } : {}),
           ...(llmModel ? { llmModel } : {}),
           ...(llmBaseUrl ? { llmBaseUrl } : {}),
           ...(searchProvider ? { searchProvider } : {}),
@@ -336,12 +336,12 @@ export function HomePage() {
 
                   <div>
                     <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Video Provider</label>
-                    <Select value={videoProvider} onValueChange={(v) => setVideoProvider(v ?? "")}>
+                    <Select value={videoProvider} onValueChange={(v) => setVideoProvider(v ?? "auto")}>
                       <SelectTrigger className="h-9 w-full rounded-lg">
-                        <SelectValue placeholder="Automatic fallback">{displayName(videoProvider || "Automatic fallback")}</SelectValue>
+                        <SelectValue>{videoProvider === "auto" ? "Automatic fallback" : displayName(videoProvider)}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Automatic fallback</SelectItem>
+                        <SelectItem value="auto">Automatic fallback</SelectItem>
                         {providers?.video.map((p) => (
                           <SelectItem key={p.key} value={p.key}>{p.label}</SelectItem>
                         ))}
