@@ -77,6 +77,14 @@ export function validateEnv(opts: {
 
   const missing = requirements.filter((r) => r.required && !process.env[r.key]);
 
+  if (opts.videoProvider === "comfyui") {
+    const missingComfy = ["COMFYUI_URL", "COMFYUI_WORKFLOW_PATH"].filter((key) => !process.env[key]);
+    if (missingComfy.length) {
+      console.error(`\nComfyUI video provider requires: ${missingComfy.join(", ")}. See docs/COMFYUI-LTX.md.\n`);
+      process.exit(1);
+    }
+  }
+
   // Stock keys are optional — the pipeline degrades gracefully (black frames) — but
   // warn upfront so users aren't surprised by missing visuals on stock_image/stock_video scenes.
   const hasStockKey = process.env["PEXELS_API_KEY"] || process.env["PIXABAY_API_KEY"];

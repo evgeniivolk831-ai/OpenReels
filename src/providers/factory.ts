@@ -39,6 +39,7 @@ import { KokoroTTS } from "./tts/kokoro.js";
 import { OpenAITTS } from "./tts/openai.js";
 import { WhisperAligner } from "./tts/whisper-aligner.js";
 import { FalVideo } from "./video/fal.js";
+import { ComfyUIVideo } from "./video/comfyui.js";
 import { GeminiVideo } from "./video/gemini.js";
 
 export interface ProviderConfig {
@@ -185,14 +186,22 @@ export function createProviders(config: ProviderConfig): Providers {
   const videoProviders: VideoProvider[] = [];
   const googleKey = k["GOOGLE_API_KEY"] ?? process.env["GOOGLE_API_KEY"];
   const falKey = k["FAL_API_KEY"] ?? process.env["FAL_API_KEY"];
+  const comfyUrl = process.env["COMFYUI_URL"];
+  const comfyWorkflow = process.env["COMFYUI_WORKFLOW_PATH"];
   const videoPrimary = config.video ?? (googleKey ? "gemini" : falKey ? "fal" : undefined);
 
-  if (videoPrimary === "fal") {
+  if (videoPrimary === "comfyui") {
+    videoProviders.push(new ComfyUIVideo(comfyUrl, comfyWorkflow));
+    if (googleKey) videoProviders.push(new GeminiVideo(config.videoModel, googleKey));
+    if (falKey) videoProviders.push(new FalVideo(undefined, falKey));
+  } else if (videoPrimary === "fal") {
     if (falKey) videoProviders.push(new FalVideo(undefined, falKey));
     if (googleKey) videoProviders.push(new GeminiVideo(config.videoModel, googleKey));
+    if (comfyUrl && comfyWorkflow) videoProviders.push(new ComfyUIVideo(comfyUrl, comfyWorkflow));
   } else if (videoPrimary === "gemini" || videoPrimary === undefined) {
     if (googleKey) videoProviders.push(new GeminiVideo(config.videoModel, googleKey));
     if (falKey) videoProviders.push(new FalVideo(undefined, falKey));
+    if (comfyUrl && comfyWorkflow) videoProviders.push(new ComfyUIVideo(comfyUrl, comfyWorkflow));
   }
 
   // Music provider: lyria requires GOOGLE_API_KEY, bundled is always available

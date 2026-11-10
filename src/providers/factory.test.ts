@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createProviders } from "./factory.js";
 import { FalVideo } from "./video/fal.js";
+import { ComfyUIVideo } from "./video/comfyui.js";
 import { GeminiVideo } from "./video/gemini.js";
 import { GeminiImage } from "./image/gemini.js";
 import { OpenAIImage } from "./image/openai.js";
@@ -85,6 +86,9 @@ vi.mock("./search/tavily.js", () => ({
 }));
 vi.mock("./video/gemini.js", () => ({
   GeminiVideo: vi.fn().mockImplementation(() => ({ supportedDurations: [4, 6, 8], generate: vi.fn() })),
+}));
+vi.mock("./video/comfyui.js", () => ({
+  ComfyUIVideo: vi.fn().mockImplementation(() => ({ supportedDurations: [5, 10], generate: vi.fn() })),
 }));
 vi.mock("./video/fal.js", () => ({
   FalVideo: vi.fn().mockImplementation(() => ({ supportedDurations: [5, 10], generate: vi.fn() })),
@@ -415,6 +419,18 @@ describe("createProviders", () => {
 
     const args = vi.mocked(AnthropicLLM).mock.calls[0]!;
     expect(args[0]).toBe("claude-opus-4-6");
+  });
+
+  it("creates ComfyUI as primary video provider when selected", () => {
+    const oldUrl = process.env["COMFYUI_URL"];
+    const oldWorkflow = process.env["COMFYUI_WORKFLOW_PATH"];
+    process.env["COMFYUI_URL"] = "http://localhost:8188";
+    process.env["COMFYUI_WORKFLOW_PATH"] = "./workflow.json";
+    const providers = createProviders({ llm: "anthropic", tts: "elevenlabs", image: "gemini", video: "comfyui" });
+    expect(ComfyUIVideo).toHaveBeenCalledWith("http://localhost:8188", "./workflow.json");
+    expect(providers.videoProviders[0]).toBeDefined();
+    if (oldUrl === undefined) delete process.env["COMFYUI_URL"]; else process.env["COMFYUI_URL"] = oldUrl;
+    if (oldWorkflow === undefined) delete process.env["COMFYUI_WORKFLOW_PATH"]; else process.env["COMFYUI_WORKFLOW_PATH"] = oldWorkflow;
   });
 
   it("passes videoModel to GeminiVideo but not FalVideo", () => {

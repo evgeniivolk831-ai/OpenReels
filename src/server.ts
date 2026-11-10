@@ -16,6 +16,9 @@ const PORT = Number(process.env["PORT"] ?? 3000);
 const HOST = process.env["HOST"] ?? "0.0.0.0";
 const JOBS_DIR = process.env["JOBS_DIR"] ?? path.join(process.cwd(), "jobs");
 const MAX_JOBS = process.env["MAX_JOBS"] ? Number(process.env["MAX_JOBS"]) : 0;
+// Retry transient provider/network failures without imposing a task-count cap.
+const JOB_ATTEMPTS = Math.max(1, Number.parseInt(process.env["JOB_ATTEMPTS"] ?? "3", 10) || 3);
+const JOB_RETRY_DELAY_MS = Math.max(1_000, Number.parseInt(process.env["JOB_RETRY_DELAY_MS"] ?? "10000", 10) || 10_000);
 const WEB_DIST = path.join(process.cwd(), "web", "dist");
 
 // Ensure jobs directory exists
@@ -166,6 +169,9 @@ app.get("/api/v1/providers", async () => ({
   video: [
     { key: "gemini", label: "Google Veo" },
     { key: "fal", label: "fal.ai (Kling, Wan, etc.)" },
+    ...(process.env["COMFYUI_URL"] && process.env["COMFYUI_WORKFLOW_PATH"]
+      ? [{ key: "comfyui", label: "ComfyUI (self-hosted workflow)" }]
+      : []),
   ],
 }));
 
@@ -204,6 +210,10 @@ app.post<{ Body: CreateJobBody }>("/api/v1/jobs", async (request, reply) => {
   }
   if (topic.trim().length > 500) {
     return reply.status(400).send({ error: "topic must be 500 characters or fewer" });
+  }
+
+  if (providers?.video && !["gemini", "fal", "comfyui"].includes(providers.video)) {
+    return reply.status(400).send({ error: `Unknown video provider: ${providers.video}` });
   }
 
   // Validate archetype if provided
@@ -283,6 +293,12 @@ app.post<{ Body: CreateJobBody }>("/api/v1/jobs", async (request, reply) => {
     },
     keys: keys ?? {},
     jobsDir: JOBS_DIR,
+  }, {
+    attempts: JOB_ATTEMPTS,
+    backoff: { type: "exponential", delay: JOB_RETRY_DELAY_MS },
+    // Keep completed/failed records until the user explicitly deletes them.
+    removeOnComplete: false,
+    removeOnFail: false,
   });
 
   // Create placeholder meta.json so GET /jobs/:id never 404s for a queued job

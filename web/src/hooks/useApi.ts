@@ -146,6 +146,7 @@ export interface CreateJobRequest {
     tts?: string;
     image?: string;
     music?: string;
+    video?: string;
   };
 }
 

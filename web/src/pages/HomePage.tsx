@@ -76,6 +76,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   lyria: "Lyria 3 Pro",
   // Video
   fal: "fal.ai (Kling)",
+  comfyui: "ComfyUI (LTX-2.5)",
 };
 
 function displayName(key: string): string {
@@ -85,18 +86,19 @@ function displayName(key: string): string {
 export function HomePage() {
   const navigate = useNavigate();
   const [topic, setTopic] = useState("");
-  const [archetype, setArchetype] = useState("");
-  const [platform, setPlatform] = useState("youtube");
-  const [llmProvider, setLlmProvider] = useState("anthropic");
+  const [archetype, setArchetype] = useState("bold_illustration");
+  const [platform, setPlatform] = useState("tiktok");
+  const [llmProvider, setLlmProvider] = useState("gemini");
   const [llmModel, setLlmModel] = useState("");
   const [llmBaseUrl, setLlmBaseUrl] = useState("");
   const [searchProvider, setSearchProvider] = useState("");
-  const [ttsProvider, setTtsProvider] = useState("elevenlabs");
+  const [ttsProvider, setTtsProvider] = useState("gemini-tts");
   const [imageProvider, setImageProvider] = useState("gemini");
   const [musicProvider, setMusicProvider] = useState("bundled");
+  const [videoProvider, setVideoProvider] = useState("auto");
   const [pacing, setPacing] = useState("");
   const [dryRun, setDryRun] = useState(false);
-  const [directionText, setDirectionText] = useState("");
+  const [directionText, setDirectionText] = useState("Создай короткий вертикальный образовательный мультфильм на русском языке. Стиль: выразительная 2D мультяшная иллюстрация и анимированная инфографика, чистые контуры, единая тёплая палитра, понятные визуальные метафоры. Если появляется ведущий персонаж, подробно зафиксируй его внешность и повторяй описание без изменений во всех сценах. Все надписи и субтитры — на русском, без псевдотекста. Речь естественная, разговорная, с правильным произношением. Один главный смысл на сцену, динамичные, но плавные переходы, музыка тише голоса. Заверши коротким визуальным выводом.");
   const [scoreJson, setScoreJson] = useState<Record<string, unknown> | null>(null);
   const [scoreFileName, setScoreFileName] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -146,6 +148,7 @@ export function HomePage() {
           tts: ttsProvider,
           image: imageProvider,
           music: musicProvider,
+          ...(videoProvider !== "auto" ? { video: videoProvider } : {}),
           ...(llmModel ? { llmModel } : {}),
           ...(llmBaseUrl ? { llmBaseUrl } : {}),
           ...(searchProvider ? { searchProvider } : {}),
@@ -166,10 +169,10 @@ export function HomePage() {
         {/* Hero */}
         <div className="text-center">
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-            What story should we tell?
+            Какую историю создадим?
           </h1>
           <p className="mt-3 text-sm sm:text-base text-muted-foreground">
-            Describe a topic and we'll turn it into a fully rendered Short.
+            Введите тему — студия создаст мультяшный ролик с русской озвучкой и субтитрами.
           </p>
         </div>
 
@@ -189,7 +192,7 @@ export function HomePage() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               maxLength={200}
-              placeholder="The science of black holes, how coffee changed history..."
+              placeholder="Например: как работает мозг, почему меняется климат..."
               className="w-full bg-transparent text-[15px] text-foreground placeholder:text-text-faint focus:outline-none"
             />
 
@@ -252,7 +255,7 @@ export function HomePage() {
                   disabled={!hasTopic || loading}
                   className="gap-2 rounded-[10px] px-6 py-2.5 text-sm font-semibold"
                 >
-                  {loading ? "Generating..." : "Generate"}
+                  {loading ? "Создаём..." : "Создать ролик"}
                   {!loading && <ArrowRight className="size-4" />}
                 </Button>
               </div>
@@ -327,6 +330,21 @@ export function HomePage() {
                       <SelectContent>
                         <SelectItem value="bundled">Bundled (Free)</SelectItem>
                         <SelectItem value="lyria">Lyria 3 Pro ($0.08)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Video Provider</label>
+                    <Select value={videoProvider} onValueChange={(v) => setVideoProvider(v ?? "auto")}>
+                      <SelectTrigger className="h-9 w-full rounded-lg">
+                        <SelectValue>{videoProvider === "auto" ? "Automatic fallback" : displayName(videoProvider)}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="auto">Automatic fallback</SelectItem>
+                        {providers?.video.map((p) => (
+                          <SelectItem key={p.key} value={p.key}>{p.label}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -489,7 +507,7 @@ export function HomePage() {
         {archetypes.length > 0 && (
           <div className="w-full">
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-[1.5px] text-muted-foreground">
-              Visual Style
+              Визуальный стиль
             </h3>
             <ScrollArea className="w-full">
               <div className="flex gap-3 pb-3">
