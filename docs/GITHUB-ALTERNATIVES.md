@@ -11,14 +11,14 @@ OpenReels уже закрывает основной конвейер: тема 
 | Проект | Что даёт | Совместимость с задачей | Решение |
 |---|---|---|---|
 | [Agnes Video Generator](https://github.com/lcy362/agnes-video-generator) | Многосценовые видео, TTS, субтитры, image-to-video, keyframes, web UI; MIT | Хороший резервный продукт, но собственная облачная цепочка Agnes AI и отдельный Python-сервис. Не является drop-in провайдером OpenReels | Не копировать внутрь; рассматривать как отдельный backend после проверки API, лимитов, приватности и русского голоса |
-| [ComfyUI-LTXVideo](https://github.com/Lightricks/ComfyUI-LTXVideo) | Видеогенерация LTX-2 через ComfyUI workflows/nodes | Подходит как дополнительный backend для анимации сцен; требует отдельного ComfyUI, скачивания моделей и GPU с большим объёмом VRAM | Лучший кандидат для локального/самостоятельно размещённого video adapter |
+| [ComfyUI-LTXVideo](https://github.com/Lightricks/ComfyUI-LTXVideo) | Видеогенерация LTX-2.5 через ComfyUI workflows/nodes | Подходит как дополнительный backend для анимации сцен; требует отдельного ComfyUI, скачивания моделей и GPU с большим объёмом VRAM | Лучший кандидат для локального/самостоятельно размещённого video adapter |
 | [Videogen](https://github.com/Juwebien/videogen) | Локальная сборка видео: ComfyUI, TTS/STT, субтитры, FFmpeg, web UI | Полезен как референс для очередей, checkpoint/resume и локального рендера; не является прямой заменой мультсценического cartoon pipeline | Заимствовать архитектурные идеи, не переносить код без отдельного аудита лицензии/совместимости |
 | [Short Video Maker](https://github.com/gyoridavid/short-video-maker) | REST/MCP, Kokoro TTS, Whisper captions, Pexels, Remotion | README ограничивает voiceover английским и использует найденные фоновые видео, а не генерацию мультяшных сцен | Не подключать в качестве основного backend для русской мультстудии |
 
 ## Рекомендуемая архитектура
 
 1. Сохранить OpenReels как orchestration/UI/rendering слой.
-2. Добавить отдельный ComfyUI video provider, который отправляет workflow в ComfyUI API, ждёт завершения, скачивает клип и возвращает его в существующий scene pipeline.
+2. Добавить отдельный ComfyUI video provider, который отправляет API-workflow в ComfyUI, ждёт завершения, скачивает клип и возвращает его в существующий scene pipeline. Реализация добавлена в `src/providers/video/comfyui.ts`; настройка — в `docs/COMFYUI-LTX.md`.
 3. Вынести workflow JSON в workflows/ и конфигурацию endpoint/model в переменные окружения. Не загружать тяжёлые модели в Git.
 4. Добавить capability check/health check и fallback на существующие Veo/fal провайдеры.
 5. Для постоянства героев хранить reference image/character sheet и передавать его в workflow для каждой сцены; один только текстовый prompt не гарантирует идентичность.
