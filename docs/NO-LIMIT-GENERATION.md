@@ -50,4 +50,4 @@ Kaggle официально описывает бесплатные ускори
 - Kaggle: https://www.kaggle.com/docs/efficient-gpu-usage
 - LTX ComfyUI requirements: https://docs.ltx.io/open-source-model/integration-tools/comfy-ui
 
-**Статус:** очередь и retry-настройки добавлены в код. Kaggle GPU worker для LTX-2.5 не добавлен, потому что имеющееся бесплатное железо не соответствует рекомендуемым требованиям модели. Нужен другой, реально совместимый лёгкий видео-workflow и отдельный тест, прежде чем подключать его как провайдер.
+**Статус:** очередь и retry-настройки добавлены в код. LTX-2.5 не подходит под Kaggle T4/P100. Добавлен общий ComfyUI адаптер с настраиваемыми разрешением/FPS/шагом кадров и инструкция для тестирования Wan 2.1 VACE 1.3B (reference image → video, 480p). Это более подходящий кандидат, но Kaggle worker ещё не развёрнут, а реальный запуск на бесплатной сессии не подтверждён. См. [COMFYUI-WAN-VACE.md](COMFYUI-WAN-VACE.md).
